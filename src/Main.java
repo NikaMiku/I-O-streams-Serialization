@@ -32,9 +32,13 @@ public class Main {
 
         }
         GameProgress.zipFiles("D:/Games/savegames/saves.zip", savePath);
-        for (int i = 0; i < savePath.toArray().length; i++) {
-            GameProgress.delSave(savePath.get(i));
+        for (int i = 0; i < savesList.toArray().length; i++) {
+            GameProgress.delSave("D:/Games/savegames/save" + i + ".dat");
         }
+        GameProgress.openZip("D:/Games/savegames/saves.zip", "D:/Games/savegames/");
+        GameProgress.openProgress("D:/Games/savegames/save0.dat");
+        GameProgress.openProgress("D:/Games/savegames/save1.dat");
+        GameProgress.openProgress("D:/Games/savegames/save2.dat");
     }
 
 

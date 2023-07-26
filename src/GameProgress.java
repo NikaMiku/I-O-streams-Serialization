@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.List;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class GameProgress implements Serializable {
@@ -41,7 +42,7 @@ public class GameProgress implements Serializable {
 
     public static void delSave(String path) {
         File file = new File(path);
-        if(file.delete()) {
+        if (file.delete()) {
             //void
         } else {
             System.out.println("Файл не найден!");
@@ -89,6 +90,53 @@ public class GameProgress implements Serializable {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+
+    public static void openZip(String zipPath, String unZipPath) {
+        File destDir = new File(unZipPath);
+        if (!destDir.exists()) {
+            destDir.mkdirs();
+        }
+        ZipInputStream zipInput = null;
+        FileOutputStream fos = null;
+        try {
+            zipInput = new ZipInputStream(new FileInputStream(zipPath));
+            ZipEntry entry = zipInput.getNextEntry();
+            while (entry != null) {
+                String filePath = unZipPath + File.separator + entry.getName();
+                extractFile(zipInput, filePath);
+                zipInput.closeEntry();
+                entry = zipInput.getNextEntry();
+            }
+            zipInput.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void extractFile(ZipInputStream zipInput, String filePath) {
+        try {
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
+            byte[] bytes = new byte[512];
+            int read = 0;
+            while ((read = zipInput.read(bytes)) != -1) {
+                bos.write(bytes, 0, read);
+            }
+            bos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public static void openProgress(String filePath) {
+        try (FileInputStream fileInput = new FileInputStream(filePath)) {
+            ObjectInputStream objectInput = new ObjectInputStream(fileInput);
+            GameProgress gameProgress = (GameProgress) objectInput.readObject();
+            System.out.println(gameProgress.toString());
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
         }
     }
 }
